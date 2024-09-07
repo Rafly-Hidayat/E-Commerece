@@ -8,6 +8,7 @@ import {
 import LoginPage from "./pages/LoginPage";
 import ProductsPage from "./pages/ProductsPage";
 import { useAuthStore } from "./stores/authStore";
+import { Toaster } from "react-hot-toast";
 
 const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({
   element,
@@ -20,7 +21,7 @@ const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({
   }, [isAuthenticated]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Or a proper loading component
+    return <div>Loading...</div>;
   }
 
   return isAuthenticated ? element : <Navigate to="/login" replace />;
@@ -36,11 +37,12 @@ const App: React.FC = () => {
   }, [initialize]);
 
   if (!isInitialized) {
-    return <div>Initializing...</div>; // Or a proper loading component
+    return <div>Initializing...</div>;
   }
 
   return (
     <Router>
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route

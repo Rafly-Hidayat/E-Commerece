@@ -1,50 +1,88 @@
-# React + TypeScript + Vite
+# E-Commerce Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a Single Page Application (SPA) for managing an e-commerce product catalog. It's built with React.js and uses Zustand for state management.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Display a list of products in a card layout
+- Infinite scroll pagination
+- Add new products
+- Edit existing products
+- Delete products
+- Responsive design
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Before you begin, ensure you have met the following requirements:
 
-- Configure the top-level `parserOptions` property like this:
+- Node.js (v14.0.0 or later)
+- npm/pnpm/yarn (i use pnpm)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Installation
+
+1. Clone the repository:
+
+   ```
+   git clone https://github.com/Rafly-Hidayat/E-Commerece.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```
+   cd E-Commerece
+   ```
+
+3. Install the dependencies:
+   ```
+   pnpm install
+   ```
+
+## Configuration
+
+1. Create a `.env` file in the root directory of the project.
+2. Add the following environment variables:
+
+   ```
+   VITE_API_BASE_URL=http://localhost:3000
+   ```
+   Replace the URL with the actual backend API URL if different.
+
+## Running the Application
+
+To run the development:
+
+```
+pnpm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+The application will be available at `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## Building for Production
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+To create a production build:
+
 ```
+pnpm run build
+```
+
+This will create a `build` folder with the production-ready files.
+
+## Technologies Used
+
+- React.js
+- TypeScript
+- Zustand (State Management)
+- Axios (API calls)
+- Tailwind CSS (Styling)
+
+## Contributing
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a pull request
+
+## License
+
+This project is licensed under the MIT License.

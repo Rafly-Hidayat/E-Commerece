@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../stores/authStore';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const axiosInstance = axios.create({
     baseURL: API_BASE_URL,
@@ -24,9 +24,7 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         if (error.response.status === 401) {
-            // Handle token expiration
             useAuthStore.getState().logout();
-            // Redirect to login page or show a notification
         }
         return Promise.reject(error);
     }

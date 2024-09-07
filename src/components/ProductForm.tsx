@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useProductStore } from "../stores/productStore";
 import axiosInstance from "../utils/axiosConfig";
+import toast from "react-hot-toast";
 
 interface Product {
   id: number;
@@ -58,30 +59,55 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onClose }) => {
     if (description) formData.append("description", description);
     if (image) formData.append("image", image);
 
-    try {
-      let response;
-      if (product) {
-        response = await axiosInstance.put(
-          `/products/${product.id}`,
-          formData,
-          {
+    const apiCall = product
+      ? () =>
+          axiosInstance.put(`/products/${product.id}`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-        updateProduct(response.data);
-      } else {
-        response = await axiosInstance.post("/products", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        addProduct(response.data);
-      }
-      onClose(response.data);
-    } catch (error) {
-      console.error("Error saving product:", error);
-      // Handle error (e.g., show error message to user)
-    } finally {
-      setIsSubmitting(false);
-    }
+          })
+      : () =>
+          axiosInstance.post("/products", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+    toast
+      .promise(
+        apiCall(),
+        {
+          loading: "Saving product...",
+          success: (response) => {
+            if (product) {
+              updateProduct(response.data);
+            } else {
+              addProduct(response.data);
+            }
+            onClose(response.data);
+            return `Product ${product ? "updated" : "created"} successfully!`;
+          },
+          error: (err) => {
+            if (err.status === 500 || !err?.response?.data?.message) {
+              return `Failed to ${
+                product ? "update" : "create"
+              } product. Please try again.`;
+            } else {
+              return err.response.data.message;
+            }
+          },
+        },
+        {
+          style: {
+            minWidth: "250px",
+          },
+          success: {
+            duration: 5000,
+          },
+          error: {
+            duration: 5000,
+          },
+        }
+      )
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +124,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onClose }) => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col md:flex-row">
-      <div className="md:w-1/2 mb-4 md:mb-0 flex flex-col items-center">
+      <div className="md:w-1/2 mb-4 md:mb-0 flex flex-col items-center justify-center">
         {imagePreview ? (
           <img
             src={imagePreview}
@@ -110,13 +136,24 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onClose }) => {
             No image selected
           </div>
         )}
-        <input
-          type="file"
-          id="image"
-          onChange={handleImageChange}
-          accept="image/jpeg,image/png,image/jpg"
-          className="w-full max-w-xs"
-        />
+        <div className="relative w-full max-w-xs">
+          <input
+            type="file"
+            id="image"
+            onChange={handleImageChange}
+            accept="image/jpeg,image/png,image/jpg"
+            className="hidden"
+          />
+          <label
+            htmlFor="image"
+            className="cursor-pointer bg-white border border-gray-300 rounded-md py-2 px-4 inline-flex items-center justify-center w-full text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            {image ? "Change Image" : "Select Image"}
+          </label>
+          {image && (
+            <span className="mt-2 text-sm text-gray-500">{image.name}</span>
+          )}
+        </div>
       </div>
       <div className="md:w-1/2 md:pl-6 space-y-4">
         <div>
@@ -132,40 +169,47 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onClose }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 p-2 block w-full rounded-md border-gray-300 border shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
         </div>
-        <div>
-          <label
-            htmlFor="sku"
-            className="block text-sm font-medium text-gray-700"
-          >
-            SKU
-          </label>
-          <input
-            type="text"
-            id="sku"
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="price"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Price
-          </label>
-          <input
-            type="number"
-            id="price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
+        <div className="flex gap-2">
+          <div className="w-full">
+            <label
+              htmlFor="sku"
+              className="block text-sm font-medium text-gray-700"
+            >
+              SKU
+            </label>
+            <input
+              type="text"
+              id="sku"
+              value={sku}
+              onChange={(e) => setSku(e.target.value)}
+              required
+              className="mt-1 p-2 block w-full rounded-md border-gray-300 border shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div className="w-full">
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Price
+            </label>
+            <div className="relative mt-1 rounded-md shadow-sm">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <span className="text-gray-500 sm:text-sm">$</span>
+              </div>
+              <input
+                type="number"
+                id="price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+                className="mt-1 p-2 pl-7 block w-full rounded-md border-gray-300 border shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+          </div>
         </div>
         <div>
           <label
@@ -179,7 +223,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onClose }) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 p-2 block w-full rounded-md border-gray-300 border shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
         </div>
         <div className="flex justify-end space-x-2 pt-4">

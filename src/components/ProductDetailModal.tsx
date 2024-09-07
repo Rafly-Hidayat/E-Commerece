@@ -4,6 +4,8 @@ import ProductForm from "./ProductForm";
 import ConfirmationModal from "./ConfirmationModal";
 import { useProductStore } from "../stores/productStore";
 import axiosInstance from "../utils/axiosConfig";
+import toast from "react-hot-toast";
+import closeIcon from "../assets/closeicon.svg";
 
 interface Product {
   id: number;
@@ -28,6 +30,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
     useState(false);
   const { updateProduct, deleteProduct } = useProductStore();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleFormClose = (updatedProduct?: Product) => {
     if (updatedProduct) {
@@ -42,42 +45,56 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   };
 
   const handleDeleteConfirm = async () => {
-    try {
-      await axiosInstance.delete(`/products/${currentProduct.id}`);
-      deleteProduct(currentProduct.id);
-      onClose();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      // Handle error (e.g., show error message to user)
-    }
+    setIsDeleting(true);
+    toast
+      .promise(
+        axiosInstance.delete(`/products/${currentProduct.id}`),
+        {
+          loading: "Deleting product...",
+          success: () => {
+            deleteProduct(currentProduct.id);
+            onClose();
+            return "Product deleted successfully";
+          },
+          error: (error) => {
+            console.error("Error deleting product:", error);
+            return "Failed to delete product. Please try again";
+          },
+        },
+        {
+          style: {
+            minWidth: "250px",
+          },
+          success: {
+            duration: 5000,
+          },
+          error: {
+            duration: 5000,
+          },
+        }
+      )
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-        <div className="bg-white rounded-lg max-w-2xl w-full overflow-hidden shadow-xl">
-          <div className="flex justify-between items-start p-4 border-b">
+        <div className="bg-white rounded-lg max-w-3xl w-full overflow-hidden shadow-xl">
+          <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-xl font-semibold">
               {isEditing ? "Edit Product" : "Product Details"}
             </h2>
-            <button
+            <div
+              className="hover:cursor-pointer"
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+              <img
+                src={closeIcon}
+                className="h-4 w-4"
+              />
+            </div>
           </div>
           <div className="p-6">
             {isEditing ? (
@@ -118,13 +135,15 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <button
                 type="button"
                 onClick={handleDeleteClick}
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                disabled={isDeleting}
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Delete Product
               </button>
               <button
                 type="button"
                 onClick={onClose}
+                disabled={isDeleting}
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Close

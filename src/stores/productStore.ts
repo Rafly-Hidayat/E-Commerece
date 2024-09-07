@@ -28,6 +28,7 @@ interface ProductStore {
     updateProduct: (updatedProduct: Product) => void;
     addProduct: (newProduct: Product) => void;
     deleteProduct: (productId: number) => void;
+    importProducts: () => Promise<void>;
 }
 
 export const useProductStore = create<ProductStore>((set) => ({
@@ -68,5 +69,17 @@ export const useProductStore = create<ProductStore>((set) => ({
         set((state) => ({
             products: state.products.filter((product) => product.id !== productId),
         }));
+    },
+    importProducts: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            await axiosInstance.post('/products/import');
+            set(() => ({
+                isLoading: false,
+            }));
+        } catch (error) {
+            set({ error: 'Failed to import products', isLoading: false });
+            console.log(error);
+        }
     },
 }));
