@@ -13,7 +13,7 @@ const NavbarComponent: React.FC = () => {
           <span className="text-xl font-bold">Vite Commerce</span>
         </div>
         <div className="flex items-center">
-          <div className="flex flex-col items-end">
+          <div className="hidden sm:flex flex-col items-end">
             <span className="mr-4">{user?.username}</span>
             <span className="mr-4">{user?.email}</span>
           </div>

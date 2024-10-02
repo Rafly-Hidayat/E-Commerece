@@ -123,7 +123,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onClose }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col md:flex-row">
+    <form onSubmit={handleSubmit} className="flex flex-col md:flex-row overflow-auto">
       <div className="md:w-1/2 mb-4 md:mb-0 flex flex-col items-center justify-center">
         {imagePreview ? (
           <img

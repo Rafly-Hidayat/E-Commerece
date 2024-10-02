@@ -95,7 +95,7 @@ const ProductListPage: React.FC = () => {
               onClick={handleCreateProduct}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Create New Product
+              Create New
             </button>
           )}
         </div>
@@ -154,7 +154,7 @@ const ProductListPage: React.FC = () => {
       )}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-3xl w-full overflow-hidden shadow-xl">
+          <div className="bg-white rounded-lg max-w-3xl w-full overflow-auto shadow-xl max-h-[90%]">
             <div className="flex justify-between items-center p-4 border-b">
               <h2 className="text-xl font-semibold">Create New Product</h2>
               <div

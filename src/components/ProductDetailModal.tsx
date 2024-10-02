@@ -81,7 +81,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-        <div className="bg-white rounded-lg max-w-3xl w-full overflow-hidden shadow-xl">
+        <div className="bg-white rounded-lg max-w-3xl w-full overflow-auto max-h-[90%] shadow-xl">
           <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-xl font-semibold">
               {isEditing ? "Edit Product" : "Product Details"}
