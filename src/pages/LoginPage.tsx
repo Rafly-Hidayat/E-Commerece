@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -12,6 +12,7 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +50,7 @@ const LoginPage: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  return (
+  return isAuthenticated ? <Navigate to="/products" replace /> : (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full space-y-8 p-10 bg-white rounded-xl shadow-md">
         <div>
